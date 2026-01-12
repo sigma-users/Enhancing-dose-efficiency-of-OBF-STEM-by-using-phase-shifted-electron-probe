@@ -2,6 +2,7 @@
 
 # Environment
 CUDA is required to build and run the code. A Dockerfile is provided to create a reproducible environment with the necessary dependencies.
+The code has been tested with CUDA 11.8, A100 80GB GPU.
 
 ```bash
 # Build Docker image
@@ -9,7 +10,7 @@ docker build --no-cache -t obfweight:latest .
 ```
 
 # Usage
-```
+```bash
 # Run Docker container with GPU access and mount current directory
 docker run --gpus all --rm -it -v "$(pwd)":/workspace/pipeline obfweight:latest
 
@@ -45,6 +46,7 @@ obfweight/
     ├── 0_input/                         # Input parameters, simulation settings, atomic structures
     │   ├── 0_simulate_4d_dataset/
     │   ├── 1_reconstruct_obf_image/
+    │   ├── schemas/                     # JSON schema files for input validation
     │   └── structures/
     │
     ├── 1_code/                          # Python scripts for simulation and reconstruction

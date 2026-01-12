@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "4D-STEM Simulation Config",
+  "type": "object",
+  "required": [
+    "structure",
+    "tile_size",
+    "df",
+    "cs",
+    "energy",
+    "semiangle_cutoff",
+    "potential_sampling",
+    "max_detection_angle"
+  ],
+  "properties": {
+    "structure": {
+      "type": "string",
+      "description": "Atom structure filename that can be read by ASE"
+    },
+    "tile_size": {
+      "type": "array",
+      "description": "Size of tiled probe positions (nx, ny, nz)",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "df": {
+      "type": "number",
+      "description": "Defocus (Angstrom)"
+    },
+    "cs": {
+      "type": "number",
+      "description": "Spherical aberration coefficient (Angstrom)"
+    },
+    "energy": {
+      "type": "number",
+      "description": "Electron energy (keV)",
+      "minimum": 1
+    },
+    "semiangle_cutoff": {
+      "type": "number",
+      "description": "Condenser aperture semiangle (mrad)"
+    },
+    "potential_sampling": {
+      "type": "number",
+      "description": "Spatial sampling for potential calculation (Angstrom)"
+    },
+    "max_detection_angle": {
+      "type": "number",
+      "description": "Maximum detector angle (mrad)"
+    }
+  },
+  "additionalProperties": false
+}

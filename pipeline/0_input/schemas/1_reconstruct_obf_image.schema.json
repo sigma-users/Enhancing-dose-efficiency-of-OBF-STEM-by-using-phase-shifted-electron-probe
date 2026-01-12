@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OBF Reconstruction Config",
+  "type": "object",
+  "required": [
+    "simulation_config_label",
+    "dose",
+    "fwhm",
+    "tile_size"
+  ],
+  "properties": {
+    "simulation_config_label": {
+      "type": "string",
+      "description": "Filename of the 4D-STEM simulation config (without .json)"
+    },
+    "dose": {
+      "description": "dose per square Angstrom. Use 'inf' for infinite dose (no noise).",
+      "oneOf": [
+        { "type": "number", "minimum": 0 },
+        { "type": "string", "enum": ["inf"] }
+      ]
+    },
+    "fwhm": {
+      "type": "number",
+      "description": "Gaussian blur width to simulate probe size. (Angstrom)"
+    },
+    "tile_size": {
+      "type": "array",
+      "description": "Tile the scan axes of the 4D dataset into (nx, ny)",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 2,
+      "maxItems": 2
+    }
+  },
+  "additionalProperties": false
+}
