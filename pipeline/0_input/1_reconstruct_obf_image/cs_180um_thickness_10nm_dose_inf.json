@@ -1,0 +1,6 @@
+{
+    "simulation_config_label": "cs_180um_thickness_10nm",
+    "dose": "inf",
+    "fwhm": 0.6,
+    "tile_size": [2, 3]
+}

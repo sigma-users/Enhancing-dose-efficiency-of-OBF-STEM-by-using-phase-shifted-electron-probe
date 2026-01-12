@@ -1,0 +1,10 @@
+{
+    "structure": "FAU_110.xyz",
+    "tile_size": [2, 2, 6],
+    "df": 0,
+    "cs": 180e4,
+    "energy": 300e3,
+    "semiangle_cutoff": 20,
+    "potential_sampling": 0.05,
+    "max_detection_angle": 20
+}
