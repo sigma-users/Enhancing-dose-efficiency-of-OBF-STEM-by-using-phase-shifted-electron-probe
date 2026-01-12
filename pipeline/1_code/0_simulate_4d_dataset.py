@@ -2,8 +2,8 @@
 """Simulate 4D STEM dataset using abTEM.
 
 This script simulates a 4D STEM dataset based on a given configuration.
-The configuration is provided in a JSON file located in the `pipeline/0_input` directory.
-The result is saved as a pickle file in the `pipeline/2_output/0_simulate_4ddataset` directory.
+The configuration is provided in a JSON file located in the `pipeline/0_input/0_simulate_4d_dataset` directory.
+The result is saved as a pickle file in the `pipeline/2_output/0_simulate_4d_dataset` directory.
 """
 
 import abtem
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     input_dir = pathlib.Path(__file__).parent.parent / "0_input"
-    config_path = input_dir / f"{args.config_label}.json"
+    config_path = input_dir / "0_simulate_4d_dataset" / f"{args.config_label}.json"
     with open(config_path) as f:
         config = json.load(f)
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     measurement = probe.scan(potential, scan, detector).compute()
 
     # Save 4D dataset
-    output_dir = pathlib.Path(__file__).parent.parent / "2_output" / "0_simulate_4ddataset"
+    output_dir = pathlib.Path(__file__).parent.parent / "2_output" / "0_simulate_4d_dataset"
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / f"{args.config_label}.pkl"
     with open(output_path, "wb") as f:
