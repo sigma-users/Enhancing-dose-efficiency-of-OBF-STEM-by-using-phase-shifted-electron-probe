@@ -4,16 +4,19 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
 
-# ---- Install system deps ----
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    cmake \
-    git \
-    python3 \
-    python3-pip \
-    python3-dev \
-    python3-venv \
-    && rm -rf /var/lib/apt/lists/*
+# ---- Install Python 3.11 ----
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3.11 python3.11-dev python3.11-venv python3.11-distutils && \
+    curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11 && \
+    rm -rf /var/lib/apt/lists/*
+
+# Make python3 point to python3.11
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 
 # ---- Project root ----
 WORKDIR /workspace/obfweight
@@ -21,8 +24,9 @@ WORKDIR /workspace/obfweight
 # ---- Copy project files ----
 COPY . .
 
-RUN pip3 install --upgrade pip setuptools wheel \
-    && pip3 install -r requirements.txt
+RUN python3.11 -m ensurepip --upgrade || true && \
+    python3.11 -m pip install --upgrade pip setuptools wheel && \
+    python3.11 -m pip install -r requirements.txt
 
 # ---- Build CUDA static library ----
 RUN make
@@ -30,9 +34,9 @@ RUN make
 # ---- Build Python extension (depends on libobfweight.a) ----
 WORKDIR /workspace/obfweight/python
 
-RUN pip3 install --no-build-isolation -e .
+RUN python3.11 -m pip install --no-build-isolation -e .
 
 # ---- Final working directory ----
-WORKDIR /workspace/obfweight
+WORKDIR /workspace/pipeline
 
 CMD ["/bin/bash"]

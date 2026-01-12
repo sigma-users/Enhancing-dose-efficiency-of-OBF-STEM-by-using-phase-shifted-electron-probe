@@ -6,5 +6,5 @@ docker build --no-cache -t obfweight:latest .
 ```
 
 ```
-docker run --gpus all --rm -it obfweight:latest
+docker run --gpus all --rm -it -v "$(pwd)":/workspace/pipeline obfweight:latest
 ```
