@@ -1,13 +1,24 @@
 # Enhancing dose efficiency of OBF STEM by using phase shifted electron probe
 This repository contains the code and instructions to reproduce the results from the paper: "Enhancing dose efficiency of OBF STEM by using phase shifted electron probe".
 
-## Environment
-CUDA is required to build and run the code. A Dockerfile is provided to create a reproducible environment with the necessary dependencies.
+## Prerequisites
+CUDA is required to build and run the code.
+Docker is required to follow the instructions below.
 
-The code has been tested with CUDA 12.4 on A100 80GB GPU.
+The code has been tested in the following environments:
+- Environment 1:
+    - On-premise server
+    - Ubuntu 22.04.4 LTS
+    - NVIDIA A100 80GB GPU (CUDA 12.4)
+    - Docker 26.1.2
+- Environment 2:
+    - AWS EC2 g5g.xlarge instance
+    - NVIDIA T4G GPU (CUDA 12.8)
+    - Ubuntu 24.04.3 LTS
+    - Docker 29.2.1
 
 ```bash
-# Build Docker image
+# Build Docker image (root permission may be required)
 docker build --no-cache -t obfweight:latest .
 ```
 
