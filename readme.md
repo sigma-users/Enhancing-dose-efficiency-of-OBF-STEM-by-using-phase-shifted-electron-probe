@@ -1,27 +1,44 @@
 # Enhancing dose efficiency of OBF STEM by using phase shifted electron probe
 This repository contains the code and instructions to reproduce the results from the paper: "Enhancing dose efficiency of OBF STEM by using phase shifted electron probe".
 
-## Environment
-CUDA is required to build and run the code. A Dockerfile is provided to create a reproducible environment with the necessary dependencies.
+## Prerequisites
+- CUDA
+- Docker
+- NVIDIA Container Toolkit
 
-The code has been tested with CUDA 12.4 on A100 80GB GPU.
+The code has been tested in the following environments:
+- Environment 1:
+    - On-premise server
+    - Ubuntu 22.04.4 LTS
+    - NVIDIA A100 80GB GPU (CUDA 12.4)
+    - Docker 26.1.2
+    - NVIDIA Container Toolkit 1.16.2
+- Environment 2:
+    - AWS EC2 g5g.xlarge instance
+    - NVIDIA T4G GPU (CUDA 12.8)
+    - Ubuntu 24.04.3 LTS
+    - Docker 29.2.1
+    - NVIDIA Container Toolkit 1.18.2
 
 ```bash
-# Build Docker image
+# Build Docker image (root permission may be required)
 docker build --no-cache -t obfweight:latest .
 ```
 
 ## Usage
+Should you have trouble running the code, please refer to the Troubleshooting section below.
 ```bash
-# Run Docker container with GPU access and mount current directory
-docker run --gpus all --rm -it -v "$(pwd)":/workspace/pipeline obfweight:latest
+# Run Docker container with GPU access and mount current directory (root permission may be required)
+docker run --gpus all --rm -it -v "$(pwd)":/workspace obfweight:latest
 
 # Inside the container, navigate to the pipeline directory
 cd /workspace/pipeline
 ```
+After entering the container, you can run the full pipeline or individual steps by commands in the following sections.
 
 ### Run the entire pipeline:
 ```bash
+# Execute the full simulation and reconstruction pipeline
 bash run_all.sh
 ```
 
@@ -81,6 +98,35 @@ The json structure for reconstruction configuration is as follows:
 | `fwhm`                    | number            | Full width at half maximum of the Gaussian blur applied to simulate probe size (Angstrom). |
 | `tile_size`               | array(int,2)      | # Tile the scan axes of the 4D dataset into (nx, ny)                    |
 
+
+## Troubleshooting
+Below are common errors you may encounter, along with their solutions.
+
+### "No space left on device" error
+Cause: Insufficient disk space.
+
+Solution: Increase the storage size of your instance.
+
+Note: Default EC2 instances often come with only 8 GB of storage, which may be insufficient. We recommend increasing the storage to at least 50 GB to resolve this issue.
+
+### "Permission denied" error
+Cause: Lack of necessary privileges to run Docker commands.
+Solution:
+
+Prefix your commands with `sudo` (e.g., `sudo docker build ...`).
+
+Alternatively, add your current user to the docker group to run Docker without root privileges.
+
+### "could not select device driver... with capabilities: [[gpu]]" error
+Cause: The NVIDIA GPU is not detected or the necessary software is missing.
+
+Solution:
+
+1. Ensure your machine has a compatible NVIDIA GPU.
+
+2. Ensure `NVIDIA drivers` and the `NVIDIA Container Toolkit` are installed.
+
+Note: Standard Ubuntu EC2 AMIs do not come with GPU drivers pre-installed. They must be installed manually.
 
 ## Project Structure
 ```

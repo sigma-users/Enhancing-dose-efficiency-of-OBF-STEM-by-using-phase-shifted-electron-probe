@@ -37,6 +37,6 @@ WORKDIR /workspace/obfweight/python
 RUN python3.11 -m pip install --no-build-isolation -e .
 
 # ---- Final working directory ----
-WORKDIR /workspace/pipeline
+WORKDIR /workspace
 
 CMD ["/bin/bash"]
