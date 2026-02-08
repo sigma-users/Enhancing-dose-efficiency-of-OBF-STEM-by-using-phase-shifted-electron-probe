@@ -28,7 +28,7 @@ docker build --no-cache -t obfweight:latest .
 ## Usage
 Should you have trouble running the code, please refer to the Troubleshooting section below.
 ```bash
-# Run Docker container with GPU access and mount current directory
+# Run Docker container with GPU access and mount current directory (root permission may be required)
 docker run --gpus all --rm -it -v "$(pwd)":/workspace obfweight:latest
 
 # Inside the container, navigate to the pipeline directory
