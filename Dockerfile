@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
+FROM nvidia/cuda:12.2.2-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
@@ -19,7 +19,7 @@ RUN apt-get update && \
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 
 # ---- Project root ----
-WORKDIR /workspace/obfweight
+WORKDIR /build/obfweight
 
 # ---- Copy project files ----
 COPY . .
@@ -32,11 +32,11 @@ RUN python3.11 -m ensurepip --upgrade || true && \
 RUN make
 
 # ---- Build Python extension (depends on libobfweight.a) ----
-WORKDIR /workspace/obfweight/python
+WORKDIR /build/obfweight/python
 
 RUN python3.11 -m pip install --no-build-isolation -e .
 
 # ---- Final working directory ----
-WORKDIR /workspace/pipeline
+WORKDIR /workspace
 
 CMD ["/bin/bash"]
