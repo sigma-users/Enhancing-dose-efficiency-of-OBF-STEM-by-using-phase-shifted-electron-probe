@@ -15,14 +15,9 @@ import obfweight
 from typing import TYPE_CHECKING
 from abtem.core.energy import energy2wavelength
 from PIL import Image
-from logging import getLogger, basicConfig, INFO
 
 if TYPE_CHECKING:
     from abtem import DiffractionPatterns
-
-
-basicConfig(level=INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = getLogger(__name__)
 
 
 def fwhm_to_sigma(fwhm: float) -> float:
@@ -74,7 +69,6 @@ if __name__ == "__main__":
     if not reconstruction_config_path.exists():
         raise FileNotFoundError(f"Reconstruction config file not found: {reconstruction_config_path}")
 
-    logger.info(f"Starting OBF image reconstruction with config: {reconstruction_config}")
     with open(reconstruction_config_path) as f:
         reconstruction_config = json.load(f)
     logger.info(f"Starting OBF image reconstruction with config: {reconstruction_config}")
@@ -100,7 +94,6 @@ if __name__ == "__main__":
     energy = simulation_config["energy"]
     semiangle_cutoff = simulation_config["semiangle_cutoff"]
     wavelength = energy2wavelength(energy)
-    seed = reconstruction_config.get("seed", None)
 
     # Load structure to calculate thickness
     structure_path = (
@@ -114,7 +107,6 @@ if __name__ == "__main__":
     structure = ase.io.read(structure_path)
     thickness = structure.get_cell()[2, 2]
 
-    logger.info("Loading 4D dataset...")
     # Load 4D dataset
     dataset_path = (
         pathlib.Path(__file__).parent.parent
@@ -127,12 +119,11 @@ if __name__ == "__main__":
     with open(dataset_path, "rb") as f:
         dataset: "DiffractionPatterns" = pickle.load(f)
 
-    logger.info("Preprocessing 4D dataset...")
     # Preprocess 4D dataset (add source size, tile scan, and noise)
     dataset = dataset.gaussian_source_size(sigma=fwhm_to_sigma(fwhm)).tile_scan(tile_size)
 
     if dose != "inf":
-        dataset = dataset.poisson_noise(dose_per_area=dose, seed=seed)
+        dataset = dataset.poisson_noise(dose_per_area=dose)
 
     # Extract coordinates and sampling
     nx, ny, nkx, nky = dataset.array.shape
@@ -148,7 +139,6 @@ if __name__ == "__main__":
     kx_min, ky_min = dataset.offset
     dkx, dky = dataset.sampling
 
-    logger.info("Calculating OBF weights...")
     # Calculate OBF weights
     weight = obfweight.weight(
         qx_min,
@@ -177,7 +167,6 @@ if __name__ == "__main__":
     g = np.fft.fft2(dataset.array, axes=(0, 1))
     obf_img = np.fft.ifft2(k * np.sum(g * np.conjugate(weight), axis=(2, 3)))
 
-    logger.info("Saving reconstructed OBF image...")
     # Save reconstructed OBF image
     output_dir = (
         pathlib.Path(__file__).parent.parent
@@ -189,7 +178,6 @@ if __name__ == "__main__":
     npy_dir = output_dir / "npy"
     npy_dir.mkdir(parents=True, exist_ok=True)
     np.save(npy_dir / f"{reconstruction_config_label}_obf_image.npy", obf_img)
-    logger.info(f"Reconstructed OBF image saved to {npy_dir / f'{reconstruction_config_label}_obf_image.npy'}")
 
     # Save as png image
     image_dir = output_dir / "images"
@@ -197,4 +185,3 @@ if __name__ == "__main__":
     img = obf_img.imag
     img = (255 * (img - img.min()) / (img.max() - img.min())).astype(np.uint8)
     Image.fromarray(img).save(image_dir / f"{reconstruction_config_label}_obf_image.png")
-    logger.info(f"Reconstructed OBF image saved to {image_dir / f'{reconstruction_config_label}_obf_image.png'}")

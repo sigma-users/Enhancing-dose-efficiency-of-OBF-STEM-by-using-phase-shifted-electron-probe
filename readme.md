@@ -23,24 +23,21 @@ The code has been tested in the following environments:
     - NVIDIA Container Toolkit 1.18.2
 
 ```bash
-# Build Docker image (root permission may be required)
+# Build Docker image
 docker build --no-cache -t obfweight:latest .
 ```
 
 ## Usage
-Should you have trouble running the code, please refer to the Troubleshooting section below.
 ```bash
-# Run Docker container with GPU access and mount current directory (root permission may be required)
-docker run --gpus all --rm -it -v "$(pwd)":/workspace obfweight:latest
+# Run Docker container with GPU access and mount current directory
+docker run --gpus all --rm -it -v "$(pwd)":/workspace/pipeline obfweight:latest
 
 # Inside the container, navigate to the workspace directory
 cd /workspace
 ```
-After entering the container, you can run the full pipeline or individual steps by commands in the following sections.
 
 ### Run the entire pipeline:
 ```bash
-# Execute the full simulation and reconstruction pipeline
 bash run_all.sh
 ```
 
@@ -100,13 +97,6 @@ The json structure for reconstruction configuration is as follows:
 | `fwhm`                    | number            | Full width at half maximum of the Gaussian blur applied to simulate probe size (Angstrom). |
 | `tile_size`               | array(int,2)      | # Tile the scan axes of the 4D dataset into (nx, ny)                    |
 
-## Approximate Runtime
-The approximate runtime for each step on the two tested environments is as follows:
-|Step| Environment 1 (A100) | Environment 2 (T4G) |
-|----|----------------------|---------------------|
-| 1. Simulate 4D-STEM dataset | ~25 minutes          | ~65 minutes         |
-| 2. Reconstruct OBF image    | ~2 minutes           | ~5 minutes          |
-Note: If you run `run_all.sh`, 3 4d-stem simulations and 6 reconstructions will be performed 
 
 ## Approximate Runtime
 The approximate runtime for each step on the two tested environments is as follows:
@@ -144,16 +134,6 @@ Solution:
 2. Ensure `NVIDIA drivers` and the `NVIDIA Container Toolkit` are installed.
 
 Note: Standard Ubuntu EC2 AMIs do not come with GPU drivers pre-installed. They must be installed manually.
-
-### "killed: 9" error or freeze/crash during execution
-Cause: Insufficient memory (RAM) to run the simulation.
-
-Solution: Increase your RAM or change to an instance type with more memory. 64 GB of RAM is recommended for running the code.
-
-### "Failed to launch obfWeight kernel (error code the provided PTX was compiled with an unsupported toolchain.)!" error
-Cause: CUDA version mismatch between the host machine and the Docker container.
-Solution: Ensure that the CUDA version installed on your host machine is compatible with the CUDA version used in the Docker container. This can be achieved by modifying the `FROM` line in the Dockerfile to match your host's CUDA version or updating your host's CUDA installation.
-
 
 ## Project Structure
 ```

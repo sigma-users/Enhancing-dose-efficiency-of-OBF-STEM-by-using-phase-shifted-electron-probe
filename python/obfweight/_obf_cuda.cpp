@@ -81,8 +81,7 @@ static PyMethodDef obfMethods[] = {
     {"weight", weight, METH_VARARGS,
      "Calculate the OBF weights using CUDA.\n\n"
      "Args:\n"
-     "    qx_min, dqx, Nqx, qy_min, dqy, Nqy, kx_min, dkx, Nkx, ky_min, dky, Nky,\n"
-     "    lam, kmax, thickness, df, cs\n"
+     "    qx_min, dqx, Nqx, ... (see paper for full definition)\n"
      "Returns:\n"
      "    numpy.ndarray (complex64) with shape (Nqx, Nqy, Nkx, Nky).\n"},
     {NULL, NULL, 0, NULL}
