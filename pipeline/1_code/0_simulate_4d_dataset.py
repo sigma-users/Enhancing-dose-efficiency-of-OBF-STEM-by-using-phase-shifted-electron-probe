@@ -12,7 +12,25 @@ from ase.io import read
 import pathlib
 import argparse
 import pickle
+from logging import getLogger, basicConfig, INFO
+import dask
+import cupy as cp
 
+# settings to save GPU memory and avoid OOM errors. Adjust as needed based on your system's resources.
+dask.config.set({"num_workers": 1})
+
+abtem.config.set({
+    "device": "gpu",
+    "dask.chunk-size-gpu": "256 MB",
+    "cupy.fft-cache-size": "0 MB",
+})
+
+pc = cp.fft.config.get_plan_cache()
+pc.set_size(0)
+pc.set_memsize(0)
+
+basicConfig(level=INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = getLogger(__name__)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Simulate 4D dataset")
@@ -20,11 +38,13 @@ if __name__ == "__main__":
     parser.add_argument("--device", type=str, default="gpu", choices=["cpu", "gpu"], help="Computation device")
     args = parser.parse_args()
 
+    logger.info(f"Starting 4D dataset simulation with config: {args.config_label} on device: {args.device}")
     input_dir = pathlib.Path(__file__).parent.parent / "0_input"
     config_path = input_dir / "0_simulate_4d_dataset" / f"{args.config_label}.json"
     with open(config_path) as f:
         config = json.load(f)
 
+    logger.info(f"Configuration loaded: {config}")
     device = args.device
 
     # Load atoms
@@ -34,9 +54,11 @@ if __name__ == "__main__":
     unitcell = read(structure_path)
     atoms = unitcell * config["tile_size"]
 
+    logger.info(f"Structure loaded: {structure_path}, unit cell size: {unitcell.get_cell_lengths_and_angles()}, tiled size: {atoms.get_cell_lengths_and_angles()}")
     # Build potential
     potential = abtem.Potential(atoms, sampling=config["potential_sampling"], device=device)
 
+    logger.info(f"Potential built with sampling: {config['potential_sampling']}")
     # Set up probe
     probe = abtem.Probe(
         energy=config["energy"],
@@ -58,6 +80,7 @@ if __name__ == "__main__":
         config["max_detection_angle"],
     )
 
+    logger.info("Executing simulation...")
     # Execute simulation
     measurement = probe.scan(potential, scan, detector).compute()
 
@@ -67,4 +90,4 @@ if __name__ == "__main__":
     output_path = output_dir / f"{args.config_label}.pkl"
     with open(output_path, "wb") as f:
         pickle.dump(measurement, f)
-    print(f"4D dataset saved to {output_path}")
+    logger.info(f"4D dataset saved to {output_path}")

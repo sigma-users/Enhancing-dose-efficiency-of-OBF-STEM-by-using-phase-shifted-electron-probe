@@ -23,21 +23,27 @@ The code has been tested in the following environments:
     - NVIDIA Container Toolkit 1.18.2
 
 ```bash
-# Build Docker image
+# Build Docker image (root permission may be required)
 docker build --no-cache -t obfweight:latest .
 ```
 
 ## Usage
+If you encounter any issues while running the code, please refer to the Troubleshooting section below.
+
 ```bash
-# Run Docker container with GPU access and mount current directory
-docker run --gpus all --rm -it -v "$(pwd)":/workspace/pipeline obfweight:latest
+# Run Docker container with GPU access and mount current directory (root permission may be required)
+docker run --gpus all --rm -it -v "$(pwd)":/workspace obfweight:latest
 
 # Inside the container, navigate to the workspace directory
 cd /workspace
 ```
 
+After entering the conainer, you can run the full pipeline or individual steps by commands in the following sections.
+After the simulation and reconstruction, the results will be saved in `pipeline/2_output/` directory.
+
 ### Run the entire pipeline:
 ```bash
+# Execute the full simulation and reconstruction
 bash run_all.sh
 ```
 
@@ -48,8 +54,6 @@ python3.11 pipeline/1_code/0_simulate_4d_dataset.py <simulation_config_label>
 # Reconstruct the OBF image using the simulated dataset
 python3.11 pipeline/1_code/1_reconstruct_obf_image.py <reconstruction_config_label>
 ```
-
-Result files will be saved in the `pipeline/2_output/` directory.
 
 The `<simulation_config_label>` and `<reconstruction_config_label>` corresponds to the JSON filenames in `pipeline/0_input/0_simulate_4d_dataset/` and `pipeline/0_input/1_reconstruct_obf_image/` respectively (without the .json extension).
 
@@ -134,6 +138,16 @@ Solution:
 2. Ensure `NVIDIA drivers` and the `NVIDIA Container Toolkit` are installed.
 
 Note: Standard Ubuntu EC2 AMIs do not come with GPU drivers pre-installed. They must be installed manually.
+
+### "killed: 9" error or freeze/crash during execution
+Cause: One possible cause is insufficient memory (RAM) to run the simulation.
+
+Solution: Increase your RAM or change to an instance type with more memory. 64 GB of RAM is recommended for running the code.
+
+### "Failed to launch obfWeight kernel (error code the provided PTX was compiled with an unsupported toolchain.)!" error
+Cause: CUDA version mismatch between the host machine and the Docker container.
+Solution: Ensure that the CUDA version installed on your host machine is compatible with the CUDA version used in the Docker container. This can be achieved by modifying the `FROM` line in the Dockerfile to match your host's CUDA version or updating your host's CUDA installation.
+
 
 ## Project Structure
 ```
