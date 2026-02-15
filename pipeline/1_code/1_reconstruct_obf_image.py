@@ -74,6 +74,7 @@ if __name__ == "__main__":
     if not reconstruction_config_path.exists():
         raise FileNotFoundError(f"Reconstruction config file not found: {reconstruction_config_path}")
 
+    logger.info(f"Starting OBF image reconstruction with config: {reconstruction_config}")
     with open(reconstruction_config_path) as f:
         reconstruction_config = json.load(f)
     logger.info(f"Starting OBF image reconstruction with config: {reconstruction_config}")

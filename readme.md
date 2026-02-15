@@ -108,6 +108,14 @@ The approximate runtime for each step on the two tested environments is as follo
 | 2. Reconstruct OBF image    | ~2 minutes           | ~5 minutes          |
 Note: If you run `run_all.sh`, 3 4d-stem simulations and 6 reconstructions will be performed 
 
+## Approximate Runtime
+The approximate runtime for each step on the two tested environments is as follows:
+|Step| Environment 1 (A100) | Environment 2 (T4G) |
+|----|----------------------|---------------------|
+| 1. Simulate 4D-STEM dataset | ~25 minutes          | ~65 minutes         |
+| 2. Reconstruct OBF image    | ~2 minutes           | ~5 minutes          |
+Note: If you run `run_all.sh`, 3 4d-stem simulations and 6 reconstructions will be performed 
+
 ## Troubleshooting
 Below are common errors you may encounter, along with their solutions.
 
