@@ -22,14 +22,22 @@ The code has been tested in the following environments:
     - Docker 29.2.1
     - NVIDIA Container Toolkit 1.18.2
 
+## Usage
+If you encounter any issues while running the code, please refer to the Troubleshooting section below.
+
+First, clone the repository and navigate to the project directory:
+```bash
+git clone git@github.com:sigma-users/Enhancing-dose-efficiency-of-OBF-STEM-by-using-phase-shifted-electron-probe.git
+cd Enhancing-dose-efficiency-of-OBF-STEM-by-using-phase-shifted-electron-probe
+```
+
+Then, build the Docker image. Note that root permission may be required to run Docker commands, so you may need to prefix the command with `sudo` or configure your user permissions accordingly.
 ```bash
 # Build Docker image (root permission may be required)
 docker build --no-cache -t obfweight:latest .
 ```
 
-## Usage
-If you encounter any issues while running the code, please refer to the Troubleshooting section below.
-
+Next, run the Docker container with GPU access and mount the current directory to the container's workspace. Again, root permission may be required.
 ```bash
 # Run Docker container with GPU access and mount current directory (root permission may be required)
 docker run --gpus all --rm -it -v "$(pwd)":/workspace obfweight:latest
